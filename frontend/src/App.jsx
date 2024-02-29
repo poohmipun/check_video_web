@@ -2,79 +2,66 @@ import React, { useState, useRef, useEffect } from "react";
 import { HotTable } from "@handsontable/react";
 import { registerAllModules } from "handsontable/registry";
 import "handsontable/dist/handsontable.full.min.css";
+import apiFunction from "./api"; // Import your API function from api.jsx
 
 registerAllModules();
 
 const App = () => {
   const [csvData, setCSVData] = useState(null);
   const [currentRowVideo, setCurrentRowVideo] = useState("");
-  const hotRef = useRef(null);
-  const isHotMounted = useRef(false); // Ref to track if Handsontable instance is mounted
 
+  const currentSelectedRow = useRef(null); // Ref to track the currently selected row
+  const isDataSent = useRef(false); // Flag to track if data is already sent to the server
+  const hotRef = useRef(null);
+  const isHookSet = useRef(false);
+  const isHotMounted = useRef(false);
+
+  const handleSendToServer = (videoName) => {
+    if (!isDataSent.current) {
+      apiFunction(videoName)
+        .then((response) => {
+          console.log("Response from server:", response);
+        })
+        .catch((error) => {
+          console.error("Error sending data to server:", error);
+        })
+        .finally(() => {
+          isDataSent.current = true; // Set flag to true once data is sent
+        });
+    }
+  };
+  
   useEffect(() => {
     const hot = hotRef.current.hotInstance;
 
     const updateCurrentRow = () => {
+      console.log("Selection event triggered");
       const selected = hot.getSelected() || [];
       if (selected.length > 0) {
         const firstSelectedRow = selected[0][0];
         const rowData = hot.getDataAtRow(firstSelectedRow);
-        const videoName = rowData[0] || ""; // If rowData[0] is empty or undefined, set videoName to an empty string
+        console.log("Row Data:", rowData);
+        const videoName = rowData[0] || "";
         setCurrentRowVideo(videoName);
-        console.log(currentRowVideo)
+        console.log("Current Video Name:", videoName);
       }
     };
-
-    // Flag to track whether the hook has been set up
-    let isHookSet = false;
-
-    // Set up the hook only if the component is mounted
-    if (isHotMounted.current && !isHookSet) {
+    console.log(isHotMounted.current && !isHookSet.current);
+    if (isHotMounted.current && !isHookSet.current) {
       hot.addHook("afterSelectionEnd", updateCurrentRow);
-      isHookSet = true; // Update the flag
+      isHookSet.current = true;
+      console.log("Hook added");
     }
 
-    // Cleanup function to remove the hook if Handsontable instance is still mounted
     return () => {
-      if (isHookSet) {
+      console.log(isHookSet.current);
+      if (isHookSet.current) {
         hot.removeHook("afterSelectionEnd", updateCurrentRow);
-        isHookSet = false; // Reset the flag
+        isHookSet.current = false; // Reset the flag
+        console.log("Hook removed");
       }
     };
-  }, []); // Empty dependency array ensures this effect runs only once, like componentDidMount
-
-  const buttonClickCallback = () => {
-    const hot = hotRef.current.hotInstance;
-    const exportPlugin = hot.getPlugin("exportFile");
-    exportPlugin.downloadFile("csv", {
-      bom: false,
-      columnDelimiter: ",",
-      columnHeaders: false,
-      exportHiddenColumns: true,
-      exportHiddenRows: true,
-      fileExtension: "csv",
-      filename: "Handsontable-CSV-file_[YYYY]-[MM]-[DD]",
-      mimeType: "text/csv",
-      rowDelimiter: "\r\n",
-      rowHeaders: true,
-    });
-  };
-
-  useEffect(() => {
-    const hot = hotRef.current.hotInstance;
-
-    // Set up export button click callback
-    document
-      .getElementById("export-file")
-      .addEventListener("click", buttonClickCallback);
-
-    // Cleanup function to remove the export button click listener
-    return () => {
-      document
-        .getElementById("export-file")
-        .removeEventListener("click", buttonClickCallback);
-    };
-  }, []); // Empty dependency array ensures this effect runs only once, like componentDidMount
+  }, []);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -92,6 +79,27 @@ const App = () => {
       console.error("Error reading CSV file:", error);
     }
   };
+  const buttonClickCallback = () => {
+    const hot = hotRef.current.hotInstance;
+    const exportPlugin = hot.getPlugin("exportFile");
+    exportPlugin.downloadFile("csv", {
+      bom: false,
+      columnDelimiter: ",",
+      columnHeaders: false,
+      exportHiddenColumns: true,
+      exportHiddenRows: true,
+      fileExtension: "csv",
+      filename: "Handsontable-CSV-file_[YYYY]-[MM]-[DD]",
+      mimeType: "text/csv",
+      rowDelimiter: "\r\n",
+      rowHeaders: true,
+    });
+  };
+  
+  useEffect(() => {
+    isHotMounted.current = true;
+    isHookSet.current = false;
+  }, []);
 
   return (
     <div className="font-sans h-screen bg-gray-900 text-white max-w-screen min-h-screen flex flex-col">
