@@ -39,9 +39,3 @@ To get started with the AI Dataset Helper, follow these steps:
    - Preview associated videos and images directly within the application.
    - Export the edited dataset to a CSV file for use in AI learning tasks.
 
-
-For questions or support, please contact [Your Name](mailto:your@email.com).
-
----
-
-Feel free to customize this README template to better fit the specifics of your project. Make sure to replace placeholders like `[Your Name]` and `[Your Email]` with your actual information. Additionally, if your project has specific setup instructions or dependencies beyond what's mentioned here, make sure to include them in the appropriate sections.
