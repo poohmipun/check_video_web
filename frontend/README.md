@@ -1,5 +1,3 @@
-Certainly! Here's a template for a README.md file for your project:
-
 ---
 
 # AI Dataset Helper
