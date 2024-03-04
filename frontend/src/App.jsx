@@ -2,64 +2,81 @@ import React, { useState, useRef, useEffect } from "react";
 import { HotTable } from "@handsontable/react";
 import { registerAllModules } from "handsontable/registry";
 import "handsontable/dist/handsontable.full.min.css";
-import apiFunction from "./api"; // Import your API function from api.jsx
 
 registerAllModules();
 
 const App = () => {
-  const [csvData, setCSVData] = useState(null);
-  const [currentRowVideo, setCurrentRowVideo] = useState("");
-
-  const currentSelectedRow = useRef(null); // Ref to track the currently selected row
-  const isDataSent = useRef(false); // Flag to track if data is already sent to the server
   const hotRef = useRef(null);
   const isHookSet = useRef(false);
   const isHotMounted = useRef(false);
+  const [videoFile, setVideoFile] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
+  const [csvData, setCSVData] = useState(null);
 
-  const handleSendToServer = (videoName) => {
-    if (!isDataSent.current) {
-      apiFunction(videoName)
-        .then((response) => {
-          console.log("Response from server:", response);
-        })
-        .catch((error) => {
-          console.error("Error sending data to server:", error);
-        })
-        .finally(() => {
-          isDataSent.current = true; // Set flag to true once data is sent
-        });
-    }
-  };
-  
   useEffect(() => {
     const hot = hotRef.current.hotInstance;
 
     const updateCurrentRow = () => {
-      console.log("Selection event triggered");
       const selected = hot.getSelected() || [];
       if (selected.length > 0) {
         const firstSelectedRow = selected[0][0];
         const rowData = hot.getDataAtRow(firstSelectedRow);
-        console.log("Row Data:", rowData);
+
         const videoName = rowData[0] || "";
-        setCurrentRowVideo(videoName);
-        console.log("Current Video Name:", videoName);
+
+        // Send videoName to the backend
+        sendVideoNameToBackend(videoName);
       }
     };
-    console.log(isHotMounted.current && !isHookSet.current);
+    const sendVideoNameToBackend = async (videoName) => {
+      try {
+        const response = await fetch("http://localhost:5000/send-data", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ videoName }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to send data to server");
+        }
+
+        const responseData = await response.json();
+        const fileURLs = responseData.fileURLs || []; // Ensure fileURLs array is defined
+
+        // Find the URL for the video file in the response
+        const videoURL = fileURLs.find((url) => url.endsWith(".mp4"));
+        const imageURL = fileURLs.find((url) => url.endsWith(".jpg"));
+
+        // Set the state variables with the URLs
+        setVideoFile(videoURL);
+        console.log(videoURL); // Log videoURL here to see the updated value
+        console.log(videoFile);
+        // Check if imageURL is defined before setting the state
+        if (imageURL) {
+          setImageFile(imageURL);
+        } else {
+          setImageFile(null); // Or handle differently as per your requirement
+        }
+
+        console.log(
+          "Video and image files received from server:",
+          videoURL,
+          imageURL
+        );
+      } catch (error) {
+        console.error("Error sending data to server:", error);
+      }
+    };
+
     if (isHotMounted.current && !isHookSet.current) {
       hot.addHook("afterSelectionEnd", updateCurrentRow);
       isHookSet.current = true;
-      console.log("Hook added");
     }
 
     return () => {
-      console.log(isHookSet.current);
-      if (isHookSet.current) {
-        hot.removeHook("afterSelectionEnd", updateCurrentRow);
-        isHookSet.current = false; // Reset the flag
-        console.log("Hook removed");
-      }
+      // No cleanup or removal of hooks is necessary
     };
   }, []);
 
@@ -95,12 +112,13 @@ const App = () => {
       rowHeaders: true,
     });
   };
-  
+  useEffect(() => {
+    console.log(videoFile);
+  }, [videoFile]);
   useEffect(() => {
     isHotMounted.current = true;
     isHookSet.current = false;
   }, []);
-
   return (
     <div className="font-sans h-screen bg-gray-900 text-white max-w-screen min-h-screen flex flex-col">
       {/* Navbar content */}
@@ -134,17 +152,29 @@ const App = () => {
           {/* Top side: Video and Image sections */}
           <div className="media-preview h-full flex flex-row overflow-hidden">
             {/* Video section */}
-            <div className="video bg-gray-800 h-full w-1/2 flex items-center justify-center">
-              <h2 className="text-white">Video Section</h2>
+            <div className="video bg-gray-800 h-full w-1/2 flex items-center justify-center overflow-hidden">
+              {videoFile && (
+                <video key={videoFile} controls autoPlay className="w-max ">
+                  <source src={videoFile} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              )}
             </div>
 
             {/* Image section */}
             <div className="image bg-gray-800 h-full w-1/2 flex items-center justify-center">
-              <h2 className="text-white">Image Section</h2>
+              {imageFile && (
+                <img
+                  src={imageFile}
+                  alt="Preview"
+                  className="max-h-full max-w-full"
+                />
+              )}
             </div>
           </div>
           {/* End Top side */}
         </div>
+
         {/* Bottom side: CSV content */}
         <div className="bottom-container h-1/2 w-full overflow-hidden flex align-middle justify-center">
           <HotTable
