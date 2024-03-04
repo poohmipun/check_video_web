@@ -1,41 +1,77 @@
----
+# Check Video Web
 
-# AI Dataset Helper
+Check Video Web is a web application that allows users to view and analyze video metadata in a tabular format. It consists of frontend and backend components.
 
-The AI Dataset Helper is a web-based application designed to simplify the process of creating datasets for AI learning. It provides a user-friendly interface for importing, editing, and exporting CSV files, along with convenient preview functionality for associated videos and images. With this tool, users can streamline their dataset creation workflow by consolidating all necessary actions into a single application.
+## Installation
 
-## Features
+### Frontend
 
-- **Import CSV Files**: Easily import CSV files containing dataset information.
-- **Edit Dataset**: Edit dataset entries directly within the web interface.
-- **Export Dataset**: Export the edited dataset to a CSV file for further processing.
-- **Preview Videos and Images**: View previews of associated videos and images without needing to open additional windows.
-- **User-Friendly Interface**: Intuitive UI design for seamless navigation and usage.
+1. Navigate to the `frontend` directory:
+   ```
+   cd frontend
+   ```
+
+2. Install dependencies:
+   ```
+   npm install
+   ```
+
+### Backend
+
+1. Navigate to the `backend` directory:
+   ```
+   cd backend
+   ```
+
+2. Install dependencies:
+   ```
+   npm install
+   ```
 
 ## Usage
 
-To get started with the AI Dataset Helper, follow these steps:
+### Frontend
 
-1. **Installation**:
-   - Navigate to the `frontend` directory:
-     ```bash
-     cd frontend
-     ```
-   - Install dependencies using npm:
-     ```bash
-     npm install
-     ```
+1. Start the frontend development server:
+   ```
+   npm start
+   ```
 
-2. **Running the Application**:
-   - Start the application:
-     ```bash
-     npm start
-     ```
-   - The application should now be running locally and accessible via your web browser.
+2. Open your web browser and navigate to [http://localhost:3000](http://localhost:3000) to view the frontend application.
 
-3. **Using the Application**:
-   - Import your CSV file containing dataset information.
-   - Use the provided interface to edit dataset entries as needed.
-   - Preview associated videos and images directly within the application.
-   - Export the edited dataset to a CSV file for use in AI learning tasks.
+### Backend
 
+1. Start the backend server:
+   ```
+   npm start
+   ```
+
+2. The backend server will run on [http://localhost:5000](http://localhost:5000).
+
+## Features
+
+- View video metadata in a tabular format.
+- Import data from CSV files.
+- Export data to CSV files.
+- Customizable column configurations.
+- Integration with Handsontable's features such as sorting, filtering, and column resizing.
+
+## Configuration
+
+- Modify the `backend/server.js` file to set the main folder path (`mainFolderPath`) according to your dataset location.
+
+## Dependencies
+
+### Frontend
+
+- [React](https://reactjs.org/)
+- [Handsontable](https://handsontable.com/)
+- [react-handsontable](https://github.com/handsontable/react-handsontable)
+
+### Backend
+
+- [Express](https://expressjs.com/)
+- [body-parser](https://www.npmjs.com/package/body-parser)
+- [cors](https://www.npmjs.com/package/cors)
+- [fs](https://nodejs.org/api/fs.html)
+- [path](https://nodejs.org/api/path.html)
