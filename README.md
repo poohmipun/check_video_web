@@ -6,12 +6,17 @@ Check Video Web is a web application that allows users to view and analyze video
 
 ### Frontend
 
-1. Navigate to the `frontend` directory:
+1. Clone the repository:
    ```
-   cd frontend
+   git clone https://github.com/poohmipun/check_video_web.git
    ```
 
-2. Install dependencies:
+2. Navigate to the `frontend` directory:
+   ```
+   cd check_video_web/frontend
+   ```
+
+3. Install dependencies:
    ```
    npm install
    ```
@@ -20,7 +25,7 @@ Check Video Web is a web application that allows users to view and analyze video
 
 1. Navigate to the `backend` directory:
    ```
-   cd backend
+   cd check_video_web/backend
    ```
 
 2. Install dependencies:
@@ -75,3 +80,12 @@ Check Video Web is a web application that allows users to view and analyze video
 - [cors](https://www.npmjs.com/package/cors)
 - [fs](https://nodejs.org/api/fs.html)
 - [path](https://nodejs.org/api/path.html)
+
+
+## Contact
+
+For support, feedback, or inquiries, please contact [your-email@example.com](mailto:your-email@example.com).
+
+---
+
+Please make sure to replace "your-email@example.com" with your actual email address. If you have any further questions or need assistance, feel free to ask!
