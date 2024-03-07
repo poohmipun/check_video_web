@@ -44,6 +44,8 @@ Check Video Web is a web application that allows users to view and analyze video
 
 2. Open your web browser and navigate to [http://localhost:3000](http://localhost:3000) to view the frontend application.
 
+   Once the application is loaded, you can explore video metadata, import and export data, and customize column configurations.
+
 ### Backend
 
 1. Start the backend server:
@@ -58,8 +60,8 @@ Check Video Web is a web application that allows users to view and analyze video
 - View video metadata in a tabular format.
 - Import data from CSV files.
 - Export data to CSV files.
-- Customizable column configurations.
-- Integration with Handsontable's features such as sorting, filtering, and column resizing.
+- Customize column configurations.
+- Utilize Handsontable's features such as sorting, filtering, and column resizing.
 
 ## Configuration
 
@@ -81,11 +83,3 @@ Check Video Web is a web application that allows users to view and analyze video
 - [fs](https://nodejs.org/api/fs.html)
 - [path](https://nodejs.org/api/path.html)
 
-
-## Contact
-
-For support, feedback, or inquiries, please contact [your-email@example.com](mailto:your-email@example.com).
-
----
-
-Please make sure to replace "your-email@example.com" with your actual email address. If you have any further questions or need assistance, feel free to ask!
