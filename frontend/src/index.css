@@ -14,3 +14,11 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+/* Add this CSS to your stylesheet */
+/* Target the header row of the Handsontable */
+div.handsontable thead th {
+  position: sticky;
+  top: 0; /* Stick to the top of the container */
+  z-index: 1; /* Ensure it appears above other content */
+  background-color: #f8f9fa; /* Optional: Add background color */
+}
