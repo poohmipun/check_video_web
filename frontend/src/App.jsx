@@ -11,7 +11,59 @@ const App = () => {
   const isHotMounted = useRef(false);
   const [videoFile, setVideoFile] = useState(null);
   const [imageFile, setImageFile] = useState(null);
+
   const [csvData, setCSVData] = useState(null);
+  const headers = csvData?.headers ?? [];
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    try {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const contents = e.target.result;
+        const rows = contents.split("\n").map((row) => row.split(","));
+        const [header, ...dataRows] = rows; // Separate the first row as the header
+
+        setCSVData({
+          headers: header, // Set the headers
+          rows: dataRows, // Set the data rows
+        });
+        console.log(dataRows);
+      };
+      reader.readAsText(file);
+    } catch (error) {
+      console.error("Error reading CSV file:", error);
+    }
+  };
+
+  const buttonClickCallback = () => {
+    const hot = hotRef.current.hotInstance;
+    const exportPlugin = hot.getPlugin("exportFile");
+    exportPlugin.downloadFile("csv", {
+      bom: false,
+      columnDelimiter: ",",
+      columnHeaders: true,
+      exportHiddenColumns: true,
+      exportHiddenRows: true,
+      fileExtension: "csv",
+      filename: "Handsontable-CSV-file_[YYYY]-[MM]-[DD]",
+      mimeType: "text/csv",
+      rowDelimiter: "\r\n",
+      rowHeaders: false,
+      onBeforeSave: (data, options) => {
+        // Customize export behavior to replace blank checkbox data with "0"
+        data.forEach((row) => {
+          row.forEach((cell, index) => {
+            if (cell === "") {
+              row[index] = "0";
+            }
+          });
+        });
+      },
+    });
+  };
 
   useEffect(() => {
     const hot = hotRef.current.hotInstance;
@@ -80,45 +132,11 @@ const App = () => {
     };
   }, []);
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    try {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const contents = e.target.result;
-        const rows = contents.split("\n").map((row) => row.split(","));
-        setCSVData(rows);
-      };
-      reader.readAsText(file);
-    } catch (error) {
-      console.error("Error reading CSV file:", error);
-    }
-  };
-  const buttonClickCallback = () => {
-    const hot = hotRef.current.hotInstance;
-    const exportPlugin = hot.getPlugin("exportFile");
-    exportPlugin.downloadFile("csv", {
-      bom: false,
-      columnDelimiter: ",",
-      columnHeaders: false,
-      exportHiddenColumns: true,
-      exportHiddenRows: true,
-      fileExtension: "csv",
-      filename: "Handsontable-CSV-file_[YYYY]-[MM]-[DD]",
-      mimeType: "text/csv",
-      rowDelimiter: "\r\n",
-      rowHeaders: true,
-    });
-  };
-  useEffect(() => {
-    console.log(videoFile);
-  }, [videoFile]);
   useEffect(() => {
     isHotMounted.current = true;
     isHookSet.current = false;
   }, []);
+
   return (
     <div className="font-sans h-screen bg-gray-900 text-white max-w-screen min-h-screen flex flex-col">
       {/* Navbar content */}
@@ -152,9 +170,16 @@ const App = () => {
           {/* Top side: Video and Image sections */}
           <div className="media-preview h-full flex flex-row overflow-hidden">
             {/* Video section */}
-            <div className="video bg-gray-800 h-full w-1/2 flex items-center justify-center overflow-hidden">
+            <div className="video bg-gray-800 h-max w-1/2 flex items-center justify-center overflow-hidden">
               {videoFile && (
-                <video key={videoFile} controls autoPlay className="w-max ">
+                <video
+                  key={videoFile}
+                  controls
+                  autoPlay
+                  muted
+                  loop 
+                  className="h-full"
+                >
                   <source src={videoFile} type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
@@ -179,13 +204,14 @@ const App = () => {
         <div className="bottom-container h-1/2 w-full overflow-hidden flex align-middle justify-center">
           <HotTable
             ref={hotRef}
-            data={csvData}
-            rowHeaders={true}
+            data={csvData?.rows}
+            colHeaders={csvData?.headers}
+            rowHeaders={false}
             width="100%"
-            rowHeights={23}
+            rowHeights={100}
             colWidths={100}
-            autoWrapRow={true}
-            autoWrapCol={true}
+            autoWrapRow={false}
+            autoWrapCol={false}
             licenseKey="non-commercial-and-evaluation"
           />
         </div>

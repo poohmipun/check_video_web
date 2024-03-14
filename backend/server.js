@@ -10,7 +10,7 @@ const port = 5000;
 app.use(bodyParser.json());
 app.use(cors());
 
-let mainFolderPath = "./test_dataset"; // Store the main folder path
+let mainFolderPath = "D:/memo_dataset/test_dataset"; // Store the main folder path
 
 // Endpoint to set the main folder path
 app.post("/set-main-folder", (req, res) => {
